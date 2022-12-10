@@ -7,13 +7,12 @@ from nltk.stem import PorterStemmer
 
 class Tokenize:
     def __init__(self, file_name, output_dir):
-        self.file_name = file_name
-        self.output_dir = output_dir
+        self.doc_file = file_name
+        self.out_dir = output_dir
         self.tokens = set()
 
     def load(self):
-
-        with open('DocumentCollection/' + self.file_name, 'r', encoding='utf-8') as f:
+        with open('docs/' + self.doc_file, 'r', encoding='utf-8') as f:
             lines = f.read()
             for word in word_tokenize(lines.lower()):
                 self.tokens.add(word)
@@ -34,11 +33,13 @@ class Tokenize:
         return stemmed
 
     def save(self):
-        with open(self.output_dir + '/' + self.file_name, 'w') as f:
+        os.makedirs(self.out_dir, exist_ok=True)
+        out_file_name = self.doc_file.replace(".txt", ".json")
+        with open(self.out_dir + '/' + out_file_name, 'w') as f:
             f.write(json.dumps(self.stemming()))
 
 
 if __name__ == '__main__':
-    for file in os.listdir('./DocumentCollection/'):
-        tokenize = Tokenize(file, './tokenized')
+    for file in os.listdir('./docs/'):
+        tokenize = Tokenize(file, './.out/tokens')
         tokenize.save()

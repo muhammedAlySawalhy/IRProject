@@ -3,24 +3,24 @@ import os
 import json
 
 
-def load(file_path):
-    for file in os.listdir(file_path):
-        with open(file_path + file, 'r', encoding='utf-8') as f:
-            for line in f:
-                line = json.loads(line)
-                for term in line:
-                    yield term, file
+def load(tokens_dir):
+    for file in os.listdir(tokens_dir):
+        with open(tokens_dir + "/" + file, 'r', encoding='utf-8') as f:
+            terms = json.loads(f.read())
+            for term in terms:
+                yield term, file
 
 
 class InvertedIndex:
-    def __init__(self, terms_path):
-        self.terms_path = terms_path  # path of tokens
+    def __init__(self, tokens_dir, out_file):
+        self.tokens_dir = tokens_dir  # path of tokens
         self.terms = {}  # dict of terms and its docs
         self.postings = {}  # dict of terms and its postings list
+        self.out_file = out_file
 
     def get_terms_docs(self):
         # get all terms in a dict
-        for term, file in load(self.terms_path):
+        for term, file in load(self.tokens_dir):
             if term not in self.terms:
                 self.terms[term] = [file]
             else:
@@ -39,14 +39,13 @@ class InvertedIndex:
 
     def save_index(self):
         # save index in a file
-        print(self.postings)
-        with open('./indexing/' + 'InvertedIndex.txt', 'w', encoding='utf-8') as f:
+        os.makedirs(os.path.dirname(self.out_file), exist_ok=True)
+        with open(self.out_file, 'w', encoding='utf-8') as f:
             f.write(json.dumps(self.postings))
 
 
 if __name__ == '__main__':
-
-    index = InvertedIndex('./tokenized/')
+    index = InvertedIndex('./.out/tokens/', './.out/indexing/inv_index.json')
     index.get_terms_docs()
     index.create_index()
     index.save_index()

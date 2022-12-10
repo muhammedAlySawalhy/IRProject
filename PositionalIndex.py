@@ -22,14 +22,13 @@ example = [
 
 
 class PositionalIndex:
-    def __init__(self, inv_index_path, output_dir, file_name):
-        self.output_dir = output_dir
+    def __init__(self, inv_index_path, out_file):
         self.inv_index_path = inv_index_path
-        self.file_name = file_name
+        self.out_file = out_file
 
     def calculate_positions(self, term, doc_id):
         positions = []
-        with open('DocumentCollection/' + doc_id, 'r') as f:
+        with open('docs/' + doc_id, 'r') as f:
             for line in f:
                 line = line.split()
                 positions.append([line.index(term), doc_id])
@@ -56,11 +55,12 @@ class PositionalIndex:
         return pos_index
 
     def save(self):
-        with open(self.output_dir + '/' + self.file_name, 'w') as f:
+        os.makedirs(os.path.dirname(self.out_file), exist_ok=True)
+        with open(self.out_file, 'w') as f:
             f.write(json.dumps(self.create_positional_index()))
 
 
-i = PositionalIndex('indexing/invertedindex.txt',
-                    'indexing/', 'positional_index.txt')
-
-i.save()
+if __name__ == "__main__":
+    i = PositionalIndex('.out/indexing/inv.json',
+                        '.out/indexing/pos_index.json')
+    i.save()

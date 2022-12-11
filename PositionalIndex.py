@@ -31,6 +31,7 @@ class PositionalIndex:
         with open('docs/' + doc_id, 'r') as f:
             for line in f:
                 line = line.split()
+                if term not in line: continue
                 positions.append([line.index(term), doc_id])
 
         return positions

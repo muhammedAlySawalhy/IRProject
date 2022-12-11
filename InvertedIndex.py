@@ -20,12 +20,13 @@ class InvertedIndex:
 
     def get_terms_docs(self):
         # get all terms in a dict
-        for term, file in load(self.tokens_dir):
+        for term, tokens_file in load(self.tokens_dir):
+            doc_file = tokens_file.replace(".json", ".txt")
             if term not in self.terms:
-                self.terms[term] = [file]
+                self.terms[term] = [doc_file]
             else:
-                if file not in self.terms[term]:
-                    self.terms[term].append(file)
+                if doc_file not in self.terms[term]:
+                    self.terms[term].append(doc_file)
 
     def create_index(self):
         # create index of terms and its docs
